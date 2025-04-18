@@ -1,51 +1,39 @@
-const openButton = document.querySelector(".profile__edit-button"); //кнопка редактирования профиля
-const popup = document.querySelector(".popup"); // все элементы с классом попап
-const closeButton = document.querySelector(".popup__close"); // кнопка закрытия попапа крестик
+// открываем попап (добавляем класс)
+function openPopup(popupElement) {
+    popupElement.classList.add("popup_is-opened");
+    document.addEventListener('keydown', closeByEscape);
+  }
 
-// Открываем попап
-function openPopup(element) {
-    element.classList.add("popup_is-opened"); // добавили класс открытого попапа
-}
+// закрываем попап (убираем класс)
+function closePopup(popupElement) {
+    popupElement.classList.remove("popup_is-opened");
+    document.removeEventListener('keydown', closeByEscape);
+  }
 
-// Закрываем попап
-function closePopup(element) {
-    element.classList.remove("popup_is-opened"); // убрали класс открытого попапа
-}
-
-//   Oбработчики 
-
-function popupAction() {
-    openButton.addEventListener('click', function() {
-        openPopup(popup); // слушатель на кнопку при нажатии на которую запускается функция и открывается попап
+// закрываем попап нажатием Эскейп  
+function closeByEscape(event) {
+    if (event.key === 'Escape') {
+      const openedPopup = document.querySelector('.popup_is-opened');
+      if (openedPopup) closePopup(openedPopup);
+    }
+  }
+ 
+// закрываем попап кликом на оверлей  
+function closeByOverlay(popupElement) {
+    popupElement.addEventListener('click', (event) => {
+      if (event.target === popupElement) {
+        closePopup(popupElement);
+      }
     });
+  }
 
-    closeButton.addEventListener('click', function() {
-        closePopup(popup); // слушатель на кнопку при нажатии на которую запускается функция и закрывается попап
-    });
-// Закрытие по клику мимо попапа
-    popup.addEventListener('click', function(event){
-        if(event.target === popup) {
-            closePopup(popup);
-        }
-    });
-// Закрытие по нажатию Ecs
-    document.addEventListener('keydown', function(event){
-        if(event.key === 'Escape') {
-            closePopup(popup);
-        }
-    });
-}       
-     
-popupAction();
+// функция поведения попапов 
+function initPopup(popupElement, openButton, closeButton) {
+    if (!popupElement || !openButton || !closeButton) return;
+    
+    openButton.addEventListener('click', () => openPopup(popupElement));
+    closeButton.addEventListener('click', () => closePopup(popupElement));
+    closeByOverlay(popupElement);
+  }
   
-
-  export { openPopup, closePopup };
-
-
-
-
-
-    
-    
-
-
+  export { openPopup, closePopup, initPopup, closeByOverlay };
