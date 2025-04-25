@@ -2,8 +2,8 @@
 
 import '../pages/index.css';
 import { initialCards } from "../components/cards.js";
-import { openPopup, closePopup, initPopup, closeByOverlay } from '../components/modal.js';
-import { createCard, deleteCard, cardLikeButtonHandler, imagePopupHandler } from '../components/card.js';
+import { openPopup, closePopup, initPopup, setCloseByOverlayListener } from '../components/modal.js';
+import { createCard, deleteCard, cardLikeButtonHandler } from '../components/card.js';
 
 const cardContainer = document.querySelector(".places__list");
 
@@ -17,23 +17,27 @@ initialCards.forEach(function(cardData) {
 // попап EDIT PROFILE
 const profilePopup = document.querySelector('.popup_type_edit');
 const profileEditButton = document.querySelector('.profile__edit-button');
-const profileCloseButton = profilePopup.querySelector('.popup__close');
-initPopup(profilePopup, profileEditButton, profileCloseButton);
+profileEditButton.addEventListener('click', function(){
+  openPopup(profilePopup);
+})
+initPopup(profilePopup);
 
 // попап добавления НОВОЙ карточки
 const cardPopup = document.querySelector('.popup_type_new-card');
 const cardAddButton = document.querySelector('.profile__add-button');
-const cardCloseButton = cardPopup.querySelector('.popup__close');
-initPopup(cardPopup, cardAddButton, cardCloseButton);
+cardAddButton.addEventListener('click', function(){
+  openPopup(cardPopup);
+})
+initPopup(cardPopup);
 
 
 // обработик формы submit
 
-const formElement = document.querySelector('[name="edit-profile"]');
+const formElementProfile = document.querySelector('[name="edit-profile"]');
 const nameInput = document.querySelector('.popup__input_type_name');
 const jobInput = document.querySelector('.popup__input_type_description');
 
-function handleFormSubmit(evt) {
+function handleFormSubmitProfile(evt) {
   evt.preventDefault();
   // значение полей Edit profile
 
@@ -44,7 +48,7 @@ const profileDescription = document.querySelector('.profile__description');
   closePopup(profilePopup);
 }
 
-formElement.addEventListener('submit', handleFormSubmit); 
+formElementProfile.addEventListener('submit', handleFormSubmitProfile); 
 
 // lобавление новой карточки через попап меню
 
@@ -66,5 +70,15 @@ function handleFormSubmitNewCard(evt) { //обработчик формы
 
 formElementCard.addEventListener('submit', handleFormSubmitNewCard);
 
-
+// клик по картинке который открывает картику
+function imagePopupHandler(cardData) {
+  const popupImage = document.querySelector('.popup_type_image');
+  const popupImageElement = popupImage.querySelector('.popup__image');
+  const popupCaption = popupImage.querySelector('.popup__caption');
+    popupImageElement.src = cardData.link;
+    popupImageElement.alt = cardData.name;
+    popupCaption.textContent = cardData.name;
+    openPopup(popupImage); // открвыаем попап
+    initPopup(popupImage);    
+}
 
