@@ -20,3 +20,21 @@
     line-height: 15px;
   }
 }
+
+.popup__input_type_error {
+  border-bottom: 1px solid #ff0000; /* Красная граница */
+}
+
+.form__input-error {
+  color: #ff0000; /* Красный текст ошибки */
+  font-size: 12px;
+  line-height: 1.25;
+  margin-top: 5px;
+  min-height: 30px;
+  opacity: 0; /* Сначала скрыто */
+  transition: opacity 0.3s;
+}
+
+.form__input-error_active {
+  opacity: 1; /* Показываем при ошибке */
+}
