@@ -1,8 +1,8 @@
 import '../pages/index.css';
 import { openPopup, closePopup, initPopup } from '../components/modal.js';
-import { createCard, deleteCard } from '../components/card.js';
+import { createCard, deleteCard, cardLikeButtonHandler } from '../components/card.js';
 import { enableValidation, validationConfig, clearValidation } from '../components/validate.js';
-import { getInitialCards, getUserInfo, addNewCard, config, updateAvatar, cardLikeButtonHandler, updateProfileInfo } from '../components/api.js';
+import { getInitialCards, getUserInfo, addNewCard, config, updateAvatar, updateProfileInfo } from '../components/api.js';
 
 // Инициализация пользователя
 let currentUserId;

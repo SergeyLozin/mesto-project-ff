@@ -1,7 +1,4 @@
-
-
-
-
+import { toggleLike } from './api.js';
 
 export function createCard(cardData, deleteCard, cardLikeButtonHandler, imagePopupHandler, currentUserId) {
   const cardTemplate = document.querySelector("#card-template").content;
@@ -44,14 +41,19 @@ export function createCard(cardData, deleteCard, cardLikeButtonHandler, imagePop
 }
 
 // функция удаления карточек
-
 export function deleteCard(event) {
-    const card = event.target.closest(".card");
-    card.remove();
-  }
+  const card = event.target.closest(".card");
+  card.remove();
+}
 
-
-
-
-
- 
+// Обработчик лайка карточки
+export function cardLikeButtonHandler(likeButton, cardId, likeCountElement) {
+  const isLiked = likeButton.classList.contains('card__like-button_is-active');
+  
+  toggleLike(cardId, isLiked)
+    .then(updatedCard => {
+      likeButton.classList.toggle('card__like-button_is-active');
+      likeCountElement.textContent = updatedCard.likes.length;
+    })
+    .catch(err => console.error('Ошибка при обновлении лайка:', err));
+}
