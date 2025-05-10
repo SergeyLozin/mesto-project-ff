@@ -84,5 +84,25 @@ const config = {
     })
     .then(checkResponse);
   };
+
+  // функция лайк карточки
+export function cardLikeButtonHandler(likeButton, cardId, likeCountElement) {
+    const isLiked = likeButton.classList.contains('card__like-button_is-active');
+    const method = isLiked ? 'DELETE' : 'PUT';
+  
+    fetch(`https://nomoreparties.co/v1/wff-cohort-37/cards/likes/${cardId}`, {
+      method: method,
+      headers: {
+        authorization: 'd31f61de-0975-44cc-9988-d24422d9cf34',
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(res => res.json())
+    .then(updatedCard => {
+      likeButton.classList.toggle('card__like-button_is-active');
+      likeCountElement.textContent = updatedCard.likes.length;
+    })
+    .catch(err => console.error('Ошибка при обновлении лайка:', err));
+  }
   
   export { config };

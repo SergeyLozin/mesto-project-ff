@@ -1,8 +1,8 @@
 import '../pages/index.css';
 import { openPopup, closePopup, initPopup } from '../components/modal.js';
-import { createCard, deleteCard, cardLikeButtonHandler } from '../components/card.js';
+import { createCard, deleteCard } from '../components/card.js';
 import { enableValidation, validationConfig, clearValidation } from '../components/validate.js';
-import { getInitialCards, getUserInfo, addNewCard, config, updateAvatar } from '../components/api.js';
+import { getInitialCards, getUserInfo, addNewCard, config, updateAvatar, cardLikeButtonHandler, updateProfileInfo } from '../components/api.js';
 
 // Инициализация пользователя
 let currentUserId;
@@ -35,23 +35,35 @@ editAvatarButton.addEventListener('click', () => {
   clearValidation(avatarForm, validationConfig);
   openPopup(avatarPopup);
 });
-initPopup(avatarPopup);
 
 // Отправка формы аватара
 function handleAvatarSubmit(evt) {
   evt.preventDefault();
-  const submitButton = evt.submitter;
-  const initialText = submitButton.textContent;
-  submitButton.textContent = 'Сохранение...';
+  const formData = new FormData(evt.target);
+  const avatarUrl = formData.get("avatar").trim();
 
-  updateAvatar(avatarInput.value)
-    .then(userData => {
-      profileImage.style.backgroundImage = `url(${userData.avatar})`;
+  if (!avatarUrl) {
+    alert("Введите ссылку на аватар!");
+    return;
+  }
+  if (!avatarUrl.startsWith("http")) {
+    alert("URL должен начинаться с http:// или https://");
+    return;
+  }
+
+  const submitButton = evt.submitter;
+  submitButton.textContent = "Сохранение...";
+
+  updateAvatar(avatarUrl)
+    .then((userData) => {
+      profileImage.style.backgroundImage = `url('${userData.avatar}')`;
       closePopup(avatarPopup);
     })
-    .catch(err => console.error('Ошибка при обновлении аватара:', err))
+    .catch((err) => {
+      alert("Сервер отклонил URL. Попробуйте другую ссылку.");
+    })
     .finally(() => {
-      submitButton.textContent = initialText;
+      submitButton.textContent = "Сохранить";
     });
 }
 
@@ -80,7 +92,7 @@ Promise.all([getUserInfo(), getInitialCards()])
     });
   })
   .catch(err => {
-    console.error('Ошибка при загрузке данных:', err);
+     alert('Ошибка при загрузке');
   });
 
 // Попап редактирования профиля
@@ -95,7 +107,7 @@ initPopup(profilePopup);
 // Попап добавления карточки
 document.querySelector('.profile__add-button').addEventListener('click', function() {
   formElementCard.reset();
-  clearValidation(formElementCard, validationConfig);
+  
   openPopup(cardPopup);
 });
 initPopup(cardPopup);
@@ -103,10 +115,28 @@ initPopup(cardPopup);
 // Обработчик формы профиля
 function handleFormSubmitProfile(evt) {
   evt.preventDefault();
-  document.querySelector('.profile__title').textContent = nameInput.value;
-  document.querySelector('.profile__description').textContent = jobInput.value;
-  closePopup(profilePopup);
+  
+  const submitButton = evt.submitter;
+  const initialText = submitButton.textContent;
+  submitButton.textContent = 'Сохранение...';
+  
+  const newName = nameInput.value;
+  const newDescription = jobInput.value;
+
+  updateProfileInfo(newName, newDescription)
+    .then(userData => {
+      document.querySelector('.profile__title').textContent = userData.name;
+      document.querySelector('.profile__description').textContent = userData.about;
+      closePopup(profilePopup);
+    })
+    .catch(err => {
+      alert('Не удалось обновить профиль. Попробуйте ещё раз.');
+    })
+    .finally(() => {
+      submitButton.textContent = initialText;
+    });
 }
+
 formElementProfile.addEventListener('submit', handleFormSubmitProfile);
 
 // Обработчик формы новой карточки
@@ -127,6 +157,7 @@ function handleFormSubmitNewCard(evt) {
       );
       cardContainer.prepend(cardElement);
       formElementCard.reset();
+      clearValidation(formElementCard, validationConfig);
       closePopup(cardPopup);
     })
     .catch(err => console.error('Ошибка при создании карточки:', err))
