@@ -35,6 +35,7 @@ editAvatarButton.addEventListener('click', () => {
   clearValidation(avatarForm, validationConfig);
   openPopup(avatarPopup);
 });
+  initPopup(avatarPopup); // закрываем по клику на кнопку и по оверлею
 
 // Отправка формы аватара
 function handleAvatarSubmit(evt) {
